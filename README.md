@@ -2,7 +2,7 @@
 
 ## *文件结构*
 
-
+```
 Project
 ├─ login.php               登录界面
 ├─ register.php           注册界面
@@ -28,3 +28,4 @@ Project
 │  └─ ChillReunion_Sans.otf
 └─ error                   报错页面
    └─ *.html
+```
