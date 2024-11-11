@@ -22,6 +22,8 @@ Project
 │  ├─ error.log        报错日志
 │  ├─ send.log         发送日志 
 │  └─ uploads.log      上传日志
+├─ send_html           发送的提示界面
+│  └─ *.html     
 ├─ images              图片文件
 │  └─ *.png       
 ├─ FunctionJump        具体功能页面
