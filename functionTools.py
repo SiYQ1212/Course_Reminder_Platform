@@ -3,14 +3,16 @@
 import datetime
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from email.header import Header
 from random import choice
-import schedule
 import fitz
 import json
 import re
 import os
+import inspect
 from Configure import *
+import markdown2
 
 def log_error(string):
     """
@@ -188,47 +190,74 @@ def get_tomorrow_course(file_name):
     for course in data:
         if check_course(course[2]['周数'], tomorrow_week):
             send_information.append(course)
-    send = ["%s\n%s\n%s\n%s" % (
-        TIME[infor[0]], infor[2]['地点'], infor[2]['教师'], infor[1]
-    ) for infor in send_information]
-    return "\n\n\n".join(send)
+    return send_information
 
-def send_email(message, receiver):
-    """
-    发送邮件功能
-    :param message:
-    :param receiver:
-    :return:
-    """
-    new_message = MIMEText(message, 'plain', 'utf-8')
+
+def send_html_email(message, receiver, css="""""", subject="明日课程"):
+    new_message = MIMEMultipart()
+    html_part = MIMEText(message, 'html', 'utf-8')
+    new_message.attach(html_part)
+    # with open(os.path.join(os.getcwd(), "css.txt"), "r", encoding='utf-8') as f:
+    #     css = f.read()
+    css_part = MIMEText(css, 'html', 'utf-8')
+    new_message.attach(css_part)
+    
     proxy = get_proxy()
     if not proxy:
         log_error(f"{datetime.datetime.now()} Email Proxy Pool Empty")
         return False
-    sender = choice(list(proxy.items())) # 格式为 (邮箱, 密码)
+    sender = choice(list(proxy.items())) 
     new_message['From'] = Header(f"LingYun <{sender[0]}>")
     new_message['To'] = Header(f"Receiver <{receiver}>")
-    subject = "明日课表"
     new_message['Subject'] = Header(subject, 'utf-8')
     server = smtplib.SMTP_SSL("smtp.qq.com", 465)
     try:
         server.login(sender[0], sender[1])
     except Exception as e:
-        log_error(f"{datetime.datetime.now()}: <{inspect.getsourcefile(send_email)}> [send_email] :{sender[0]} don't match the password")
+        log_error(f"{datetime.datetime.now()}: <{inspect.getsourcefile(send_html_email)}> [send_html_email] :{sender[0]} don't match the password")
         proxy.pop(sender[0])
         with open(os.path.join(os.getcwd(), "proxy_pool.json"), "w", encoding='utf-8') as f:
             json.dump(proxy, f, ensure_ascii=False, indent=4)
-        return send_email(message, receiver)
+        return send_html_email(message, receiver)
 
     try:
         server.sendmail(sender[0], receiver, new_message.as_string())
     except Exception as e:
-        log_error(f"{datetime.datetime.now()}: <{inspect.getsourcefile(send_email)}> [send_email] :{e}")
+        log_error(f"{datetime.datetime.now()}: <{inspect.getsourcefile(send_html_email)}> [send_html_email] :{e}")
         server.close()
         return False
     server.close()
     log_send(f"{datetime.datetime.now()} send successful to {receiver}")
     return True
 
+@find_error
+def create_html(course_information):
+    """
+    创建html
+    :param course_information:
+    :return:
+    """
+    html = Struct_front
+    for course in course_information:
+        html += f"""
+                <div class="course-box">
+                    <div class="time">⏰ {TIME[course[0]]}</div>
+                    <div class="course-content">
+                        <div class="course-name">{course[1]}</div>
+                        <div class="location">🏫 {course[2]['地点'].replace('，', ',')} - {course[2]['教师']}</div>
+                    </div>
+                </div>
+"""
+    html += Struct_tail
+    return html
+
 if __name__ == '__main__':
-    ...
+    # print(os.getcwd())
+    # sd = get_tomorrow_course("2668733873@qq.com")
+    # print(sd)
+    # html = """"""
+    # send_html_email(html, "2668733873@qq.com", "测试邮件")
+    course_information = get_tomorrow_course("2668733873@qq.com")
+    html = create_html(course_information)
+    print(html)
+    send_html_email(html, "2668733873@qq.com", "明日课表")

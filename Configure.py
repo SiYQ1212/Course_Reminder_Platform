@@ -9,6 +9,26 @@ DATA = datetime.date(2024, 8, 26)
 # 发送时间
 Send_Time = "17:30"
 
+Struct_front = """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <div class="container">
+        <h1>📚 课程表</h1>
+        <div class="schedule-box">
+            <div class="course-list">
+"""
+
+Struct_tail = """
+            </div>
+        </div>
+    </div>
+</body>
+"""
+
 # 中文星期转换为英文
 CtoE = {
     "星期一": "Monday",

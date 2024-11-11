@@ -11,15 +11,17 @@ class FolderMonitor(FileSystemEventHandler):
     def on_created(self, event):
         if not event.is_directory:
             file_name = os.path.basename(event.src_path)
-            log_uploads(f"{file_name} has been created on {datetime.datetime.now()}")
-            solve_pdf(file_name.split('.')[0])
+            if file_name.endswith('.pdf'):
+                log_uploads(f"{file_name} has been created on {datetime.datetime.now()}")
+                solve_pdf(file_name.replace('.pdf', ''))
     
     def on_modified(self, event):
         if not event.is_directory:
             file_name = os.path.basename(event.src_path)
-            log_uploads(f"{file_name} has been modified on {datetime.datetime.now()}")
-            solve_pdf(file_name.split('.')[0])
-    
+            if file_name.endswith('.pdf'):
+                log_uploads(f"{file_name} has been modified on {datetime.datetime.now()}")
+                solve_pdf(file_name.replace('.pdf', ''))
+
     def on_deleted(self, event):
         if not event.is_directory:
             file_name = os.path.basename(event.src_path)
