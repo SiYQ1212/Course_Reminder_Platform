@@ -20,91 +20,38 @@ if ($row = $result->fetch_assoc()) {
     $userEmail = $row['email'];
 }
 
-// 处理文件上传
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $time = htmlspecialchars($_POST['time']);
-    $uploadDir = "../uploads/";
-    $mappingFile = "../mapping.json";
-    
-    // 确保上传目录存在并设置正确的权限
-    if (!file_exists($uploadDir)) {
-        error_log("尝试创建目录: " . $uploadDir);
-        if (!mkdir($uploadDir, 0755, true)) {
-            $error = "无法创建上传目录";
-            error_log("创建目录失败: " . error_get_last()['message']);
-        }
-    }
-    
-    if (isset($_FILES['file'])) {
-        $file = $_FILES['file'];
-        // 使用邮箱作为文件名
-        $fileName = $email . '.pdf';
-        $targetPath = $uploadDir . $fileName;
-        
-        // 获取文件扩展名
-        $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        
-        // 只允许PDF文件
-        if ($fileExtension === 'pdf' && $file['type'] === 'application/pdf') {
-            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                chmod($targetPath, 0644);
-                
-                // 更新 mapping.json，现在保存时间而不是文件名
-                $mapping = [];
-                if (file_exists($mappingFile)) {
-                    $mapping = json_decode(file_get_contents($mappingFile), true) ?? [];
-                }
-                
-                // 添加新的映射（邮箱对应时间）
-                $mapping[$email] = $time;
-                
-                // 保存映射文件
-                if (file_put_contents($mappingFile, json_encode($mapping, JSON_PRETTY_PRINT))) {
-                    chmod($mappingFile, 0644);
-                    $message = "上传成功！";
-                    echo "<script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            var msg = document.createElement('div');
-                            msg.style.position = 'fixed';
-                            msg.style.top = '50%';
-                            msg.style.left = '50%';
-                            msg.style.transform = 'translate(-50%, -50%)';
-                            msg.style.padding = '20px 40px';
-                            msg.style.background = 'rgba(0, 0, 0, 0.7)';
-                            msg.style.color = 'white';
-                            msg.style.borderRadius = '5px';
-                            msg.style.zIndex = '1000';
-                            msg.textContent = '上传成功！';
-                            document.body.appendChild(msg);
-                            
-                            setTimeout(function() {
-                                msg.style.transition = 'opacity 0.5s';
-                                msg.style.opacity = '0';
-                                setTimeout(function() {
-                                    document.body.removeChild(msg);
-                                }, 500);
-                            }, 1000);
-                        });
-                    </script>";
-                } else {
-                    $error = "保存映射文件失败";
-                    error_log("Failed to write mapping file: " . $mappingFile);
-                }
-            } else {
-                $error = "文件上传失败";
-                error_log("Failed to move uploaded file to: " . $targetPath);
-            }
-        } else {
-            $error = "只支持PDF格式文件";
-        }
-    }
+// 处理表单提交
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'];
+    $auth_code = $_POST['auth_code'];
+
+    // 读取现有的 JSON 数据
+    $filePath = '../proxy_pool.json';
+    $data = file_exists($filePath) ? json_decode(file_get_contents($filePath), true) : [];
+
+    // 追加新数据
+    $data[$email] = $auth_code;
+
+    // 将数据写回 JSON 文件
+    file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
+
+    // 使用模态框提示和重定向
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('success-modal');
+            modal.style.display = 'block';
+            setTimeout(function() {
+                modal.style.display = 'none';
+                window.location.href = '../welcome.php';
+            }, 1000);
+        });
+    </script>";
 }
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>欢迎</title>
     <meta charset="utf-8">
     <style>
         @font-face {
@@ -120,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 0;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
             background-size: 400% 400%;
@@ -207,10 +154,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .page-container {
             display: flex;
-            align-items: stretch;
+            align-items: center;
             gap: 40px;
-            max-width: 1000px;
-            margin: 0 auto;
+            margin-left: 15%;
             padding: 20px;
         }
 
@@ -242,18 +188,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 16px;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1200px) {
             .page-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .demo-container {
-                width: 100%;
-                max-width: 400px;
+                margin-left: 5%;
             }
         }
 
+        @media (max-width: 1000px) {
+            .page-container {
+                flex-direction: column;
+                align-items: center;
+                margin-left: 0;
+            }
+        }
+
+        /* 模态框样式 */
+        #success-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        #success-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .disclaimer-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 500px;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
         .back-button {
             position: absolute;
             top: 20px;
@@ -279,32 +263,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <button class="back-button" onclick="window.history.back();">返回</button>
     <div class="page-container">
+        <div class="disclaimer-container">
+            <center>    
+                <h1>免责声明</h1>
+                <h3>本项目仅供学习交流使用，不承担任何法律责任。</h3>
+            </center>
+            <p style="padding-top: 6px;">
+                1. 用户上传的邮箱以及对应的授权码，会作为邮件的发送方出现，
+                仅会出现邮箱号，不会出现邮箱其他隐私信息。<br>
+            </p>
+            <p style="padding-top: 6px;">
+                2. 用户上传的授权码如有错误，会在某一次尝试发送邮件的时候，
+                发现错误并会从邮箱代理池中移除，用户可以重新上传正确的授权码。<br>
+            </p>
+            <p style="padding-top: 6px;">
+                3. 用户上传的邮箱以及授权码，仅用于本项目，不会用于其他任何用途。<br>
+            </p>
+            <p style="padding-top: 6px;">
+                4. 本平台暂时的客服支持为QQ<span style="color: #8a20e2; font-size: 22px;">2668733873</span>,请通过QQ联系。<br>
+            </p>
+            <p style="padding-top: 6px;">
+                5. 我们会采取合理措施保护用户的个人信息，但不对因黑客攻击、通讯线路中断等不可抗力因素导致的信息泄露承担责任。<br>
+            </p>    
+            <p style="padding-top: 6px;">
+                6. 用户应遵守中华人民共和国相关法律法规，不得利用本平台从事违法违规活动。<br>
+            </p>
+        </div>
         <div class="container">
             <form action="#" method="post" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="email">接收邮箱：</label>
+                    <label for="email">贡献邮箱：</label>
                     <input type="email" id="email" name="email" required 
                            value="<?php echo htmlspecialchars($userEmail); ?>" 
                            placeholder="请输入您的邮箱地址">
                 </div>
                 
                 <div class="form-group">
-                    <label for="time">预约时间：</label>
-                    <input type="time" id="time" name="time" required placeholder="请输入时间(如 14:30)">
-                </div>
-
-                <div class="form-group">
-                    <label for="file">选择文件(仅支持PDF格式)</label>
-                    <input type="file" id="file" name="file" accept=".pdf" required>
+                    <label for="auth_code">授权码：</label>
+                    <input type="text" id="auth_code" name="auth_code" required placeholder="请输入授权码">
                 </div>
                 
                 <button type="submit" class="submit-btn">提交</button>
             </form>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="get_auth_code.php">如何获取授权码</a>
+            </div>
         </div>
+    </div>
 
-        <div class="demo-container">
-            <div class="demo-title">上传示例课表：(列表式课表)</div>
-            <img src="../images/demo.png" alt="课表示例">
+    <!-- 模态框 -->
+    <div id="success-modal">
+        <div id="success-modal-content">
+            <p>提交成功！</p>
         </div>
     </div>
 </body>

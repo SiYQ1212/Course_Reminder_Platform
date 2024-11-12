@@ -72,8 +72,8 @@
 <body>
     <div class="grid-container">
         <a href="FunctionJump/upload.php" class="grid-item">课表上传<h5>💻</h5></a>
-        <div class="grid-item">测试发送<h5>💌</h5></div>
-        <div class="grid-item">作为贡献者<h5>👨‍💻</h5></div>
+        <a href="FunctionJump/test_sending.php" class="grid-item">测试发送<h5>💌</h5></a>
+        <a href="FunctionJump/join_us.php" class="grid-item">作为贡献者<h5>👨‍💻</h5></a>
         <div class="grid-item">功能暂未开放</div>
         <div class="grid-item">功能暂未开放</div>
         <div class="grid-item">功能暂未开放</div>

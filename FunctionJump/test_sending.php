@@ -20,84 +20,19 @@ if ($row = $result->fetch_assoc()) {
     $userEmail = $row['email'];
 }
 
-// 处理文件上传
+// 添加处理表单提交的代码
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $time = htmlspecialchars($_POST['time']);
-    $uploadDir = "../uploads/";
-    $mappingFile = "../mapping.json";
+    $email = $_POST['email'];
     
-    // 确保上传目录存在并设置正确的权限
-    if (!file_exists($uploadDir)) {
-        error_log("尝试创建目录: " . $uploadDir);
-        if (!mkdir($uploadDir, 0755, true)) {
-            $error = "无法创建上传目录";
-            error_log("创建目录失败: " . error_get_last()['message']);
-        }
-    }
+    // 调用Python脚本
+    $command = "python .\send.py " . escapeshellarg($email);
+    $output = shell_exec($command);
     
-    if (isset($_FILES['file'])) {
-        $file = $_FILES['file'];
-        // 使用邮箱作为文件名
-        $fileName = $email . '.pdf';
-        $targetPath = $uploadDir . $fileName;
-        
-        // 获取文件扩展名
-        $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        
-        // 只允许PDF文件
-        if ($fileExtension === 'pdf' && $file['type'] === 'application/pdf') {
-            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                chmod($targetPath, 0644);
-                
-                // 更新 mapping.json，现在保存时间而不是文件名
-                $mapping = [];
-                if (file_exists($mappingFile)) {
-                    $mapping = json_decode(file_get_contents($mappingFile), true) ?? [];
-                }
-                
-                // 添加新的映射（邮箱对应时间）
-                $mapping[$email] = $time;
-                
-                // 保存映射文件
-                if (file_put_contents($mappingFile, json_encode($mapping, JSON_PRETTY_PRINT))) {
-                    chmod($mappingFile, 0644);
-                    $message = "上传成功！";
-                    echo "<script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            var msg = document.createElement('div');
-                            msg.style.position = 'fixed';
-                            msg.style.top = '50%';
-                            msg.style.left = '50%';
-                            msg.style.transform = 'translate(-50%, -50%)';
-                            msg.style.padding = '20px 40px';
-                            msg.style.background = 'rgba(0, 0, 0, 0.7)';
-                            msg.style.color = 'white';
-                            msg.style.borderRadius = '5px';
-                            msg.style.zIndex = '1000';
-                            msg.textContent = '上传成功！';
-                            document.body.appendChild(msg);
-                            
-                            setTimeout(function() {
-                                msg.style.transition = 'opacity 0.5s';
-                                msg.style.opacity = '0';
-                                setTimeout(function() {
-                                    document.body.removeChild(msg);
-                                }, 500);
-                            }, 1000);
-                        });
-                    </script>";
-                } else {
-                    $error = "保存映射文件失败";
-                    error_log("Failed to write mapping file: " . $mappingFile);
-                }
-            } else {
-                $error = "文件上传失败";
-                error_log("Failed to move uploaded file to: " . $targetPath);
-            }
-        } else {
-            $error = "只支持PDF格式文件";
-        }
+    // 可以添加处理返回结果的代码
+    if ($output !== null) {
+        echo "<script>alert('测试邮件已发送！');</script>";
+    } else {
+        echo "<script>alert('" . $output . "');</script>";
     }
 }
 ?>
@@ -279,6 +214,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <button class="back-button" onclick="window.history.back();">返回</button>
     <div class="page-container">
+    <div class="disclaimer-container">
+            <center>    
+                <h1>测试说明</h1>
+            </center>
+            <p style="padding-top: 6px;">
+                1. 如果用户没有上传课表，邮件默认认为您没有接收权限，会发送一个无权限提示邮件。<br>
+            </p>
+            <p style="padding-top: 6px;">
+                2. 用户上传了课表，但是课表格式不正确导致PDF解析失败，则会发送无权限提示邮件，
+                并且该邮箱会被删除，之后无法接收邮件。解决办法就是重新上传正确的课表。<br>
+            </p>
+            <p style="padding-top: 6px;">
+                3. 用户上传了课表，且课表格式正确，但是明日无课，会发送一个无课测试邮件(自行区分与上条区别)。<br>
+            </p>
+            <p style="padding-top: 6px;">
+                4. 用户上传了课表，且课表格式正确，且明日有课，会发送一个明日课表测试邮件。<br>
+            </p>
+        </div>
         <div class="container">
             <form action="#" method="post" enctype="multipart/form-data">
                 <div class="form-group">
@@ -287,25 +240,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                            value="<?php echo htmlspecialchars($userEmail); ?>" 
                            placeholder="请输入您的邮箱地址">
                 </div>
-                
-                <div class="form-group">
-                    <label for="time">预约时间：</label>
-                    <input type="time" id="time" name="time" required placeholder="请输入时间(如 14:30)">
-                </div>
-
-                <div class="form-group">
-                    <label for="file">选择文件(仅支持PDF格式)</label>
-                    <input type="file" id="file" name="file" accept=".pdf" required>
-                </div>
-                
                 <button type="submit" class="submit-btn">提交</button>
             </form>
         </div>
 
-        <div class="demo-container">
-            <div class="demo-title">上传示例课表：(列表式课表)</div>
-            <img src="../images/demo.png" alt="课表示例">
-        </div>
     </div>
 </body>
 </html>

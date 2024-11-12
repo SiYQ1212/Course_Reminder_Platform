@@ -12,7 +12,6 @@ import re
 import os
 import inspect
 from Configure import *
-import markdown2
 
 def log_error(string):
     """
@@ -20,7 +19,7 @@ def log_error(string):
     :param string: 日志信息
     :return:
     """
-    filePath = os.path.join(os.getcwd(), 'logs', 'error.log')
+    filePath = os.path.join(".", 'logs', 'error.log')
     with open(filePath, "a+", encoding='utf-8') as f:
         f.write(string + '\n')
 
@@ -30,7 +29,7 @@ def log_send(string):
     :param string: 日志消息
     :return:
     """
-    filePath = os.path.join(os.getcwd(), 'logs', 'send.log')
+    filePath = os.path.join(".", 'logs', 'send.log')
     with open(filePath, "a+", encoding='utf-8') as f:
         f.write(string + '\n')
 
@@ -192,7 +191,6 @@ def get_tomorrow_course(file_name):
             send_information.append(course)
     return send_information
 
-
 def send_html_email(message, receiver, css="""""", subject="明日课程"):
     new_message = MIMEMultipart()
     html_part = MIMEText(message, 'html', 'utf-8')
@@ -251,13 +249,26 @@ def create_html(course_information):
     html += Struct_tail
     return html
 
+@find_error
+def send_test(receiver):
+    """
+    发送测试邮件
+    receiver: 接收者邮箱
+    """
+    mapping = get_mapping()
+    if mapping.get(receiver, False):
+        course_information = get_tomorrow_course(receiver)
+        if course_information:
+            html = create_html(course_information)
+            with open(os.path.join(os.getcwd(), "css.txt"), "r", encoding='utf-8') as f:
+                css = f.read()
+            send_html_email(html, receiver, css=css, subject="明日课程")
+        else: # 明天没有课程安排
+            html = open(os.path.join(os.getcwd(), "send_html/no_course.html"), "r", encoding='utf-8').read()
+            send_html_email(html, receiver, subject="明日课程")
+    else: # 不在课程表接收列表中
+        html = open(os.path.join(os.getcwd(), "send_html/no_mapping.html"), "r", encoding='utf-8').read()
+        send_html_email(html, receiver, subject="测试邮件")
+
 if __name__ == '__main__':
-    # print(os.getcwd())
-    # sd = get_tomorrow_course("2668733873@qq.com")
-    # print(sd)
-    # html = """"""
-    # send_html_email(html, "2668733873@qq.com", "测试邮件")
-    course_information = get_tomorrow_course("2668733873@qq.com")
-    html = create_html(course_information)
-    print(html)
-    send_html_email(html, "2668733873@qq.com", "明日课表")
+    ...

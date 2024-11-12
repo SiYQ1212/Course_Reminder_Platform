@@ -17,6 +17,7 @@ Project
 ├─ mapping.json        邮箱映射文件
 ├─ proxy_pool.json     邮箱代理池
 ├─ css.txt             css样式
+├─ requirements.txt    依赖库
 ├─ README.md
 ├─ logs                日志
 │  ├─ error.log        报错日志
