@@ -6,6 +6,7 @@ import datetime
 # 开学日期 firstDay
 DATA = datetime.date(2024, 8, 26)
 
+Path = "/var/www/html/"
 # 发送时间
 Send_Time = "17:30"
 

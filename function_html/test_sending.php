@@ -25,20 +25,91 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     
     // 调用Python脚本
-    $command = "python .\send.py " . escapeshellarg($email);
+    $command = "python3 ../auxiliary_program/send_test_email.py " . escapeshellarg($email);
     $output = shell_exec($command);
     
     // 可以添加处理返回结果的代码
     if ($output !== null) {
-        echo "<script>alert('测试邮件已发送！');</script>";
+        echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // 创建遮罩层
+                    var overlay = document.createElement('div');
+                    overlay.style.position = 'fixed';
+                    overlay.style.top = '0';
+                    overlay.style.left = '0';
+                    overlay.style.width = '100%';
+                    overlay.style.height = '100%';
+                    overlay.style.background = 'rgba(0, 0, 0, 0.5)';
+                    overlay.style.zIndex = '999';
+                    document.body.appendChild(overlay);
+                    
+                    // 创建提示消息
+                    var msg = document.createElement('div');
+                    msg.style.position = 'fixed';
+                    msg.style.top = '50%';
+                    msg.style.left = '50%';
+                    msg.style.transform = 'translate(-50%, -50%)';
+                    msg.style.padding = '20px 40px';
+                    msg.style.background = 'rgba(0, 0, 0, 0.7)';
+                    msg.style.color = 'white';
+                    msg.style.borderRadius = '5px';
+                    msg.style.zIndex = '1000';
+                    msg.textContent = '已发送，请稍等！';
+                    document.body.appendChild(msg);
+                    
+                    setTimeout(function() {
+                        msg.style.transition = 'opacity 0.5s';
+                        overlay.style.transition = 'opacity 0.5s';
+                        msg.style.opacity = '0';
+                        overlay.style.opacity = '0';
+                        window.location.href = '../welcome.php';
+                    }, 1000);
+                });
+            </script>";
     } else {
-        echo "<script>alert('" . $output . "');</script>";
+        echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // 创建遮罩层
+                    var overlay = document.createElement('div');
+                    overlay.style.position = 'fixed';
+                    overlay.style.top = '0';
+                    overlay.style.left = '0';
+                    overlay.style.width = '100%';
+                    overlay.style.height = '100%';
+                    overlay.style.background = 'rgba(0, 0, 0, 0.5)';
+                    overlay.style.zIndex = '999';
+                    document.body.appendChild(overlay);
+                    
+                    // 创建提示消息
+                    var msg = document.createElement('div');
+                    msg.style.position = 'fixed';
+                    msg.style.top = '50%';
+                    msg.style.left = '50%';
+                    msg.style.transform = 'translate(-50%, -50%)';
+                    msg.style.padding = '20px 40px';
+                    msg.style.background = 'rgba(0, 0, 0, 0.7)';
+                    msg.style.color = 'white';
+                    msg.style.borderRadius = '5px';
+                    msg.style.zIndex = '1000';
+                    msg.textContent = '发送出错，等待维护';
+                    document.body.appendChild(msg);
+                    
+                    setTimeout(function() {
+                        msg.style.transition = 'opacity 0.5s';
+                        overlay.style.transition = 'opacity 0.5s';
+                        msg.style.opacity = '0';
+                        overlay.style.opacity = '0';
+                        window.location.href = '../welcome.php';
+                    }, 1000);
+                });
+            </script>";
     }
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>欢迎</title>
     <meta charset="utf-8">
     <style>
@@ -133,6 +204,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 16px;
             width: 100%;
             transition: all 0.3s ease;
+            padding: 20px 20px;
+            text-align: center;
         }
 
         .submit-btn:hover {
@@ -190,46 +263,84 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .back-button {
+            font-family: 'ChillReunion', sans-serif;
             position: absolute;
             top: 20px;
-            left: 20px;
+            left: -160px;
             background-color: #ff6b6b;
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 50px;
+            border-radius: 0 50px 50px 0;
             cursor: pointer;
-            font-size: 16px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 240px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+        }
+
+        .back-button .icon {
+            font-size: 48px;
+            position: absolute;
+            right: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button .text {
+            font-family: 'ChillReunion', sans-serif;
+            position: absolute;
+            right: 65px;
+            font-size: 28px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .back-button:hover {
+            left: 0;
             background-color: #ff4c4c;
-            transform: scale(1.1);
         }
 
+        .back-button:hover .icon {
+            right: 180px;
+        }
+
+        .back-button:hover .text {
+            opacity: 1;
+            right: 30px;
+        }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="window.history.back();">返回</button>
+<button class="back-button" onclick="window.history.back();"">
+        <i class="icon fa-solid fa-cat"></i>
+        <span class="text">返回上页</span>
+    </button>
     <div class="page-container">
     <div class="disclaimer-container">
             <center>    
                 <h1>测试说明</h1>
             </center>
             <p style="padding-top: 6px;">
-                1. 如果用户没有上传课表，邮件默认认为您没有接收权限，会发送一个无权限提示邮件。<br>
+                1. 用户没有上传课表，邮件默认认为您没有接收权限，会发送一个无权限提示邮件。
+                只能证明您的邮箱可以使用。<br>
             </p>
             <p style="padding-top: 6px;">
-                2. 用户上传了课表，但是课表格式不正确导致PDF解析失败，则会发送无权限提示邮件，
+                2. 用户没有上传课表，同时邮箱不正确，则不会收到邮箱。<br>
+            </p>
+            <p style="padding-top: 6px;">
+                3. 用户上传了课表，但是课表格式不正确导致PDF解析失败，则会发送无权限提示邮件，
                 并且该邮箱会被删除，之后无法接收邮件。解决办法就是重新上传正确的课表。<br>
             </p>
             <p style="padding-top: 6px;">
-                3. 用户上传了课表，且课表格式正确，但是明日无课，会发送一个无课测试邮件(自行区分与上条区别)。<br>
+                4. 用户上传了课表，且课表格式正确，但是明日无课，会发送一个无课测试邮件。<br>
             </p>
             <p style="padding-top: 6px;">
-                4. 用户上传了课表，且课表格式正确，且明日有课，会发送一个明日课表测试邮件。<br>
+                5. 用户上传了课表，且课表格式正确，且明日有课，会发送一个明日课表测试邮件。<br>
             </p>
         </div>
         <div class="container">
@@ -237,10 +348,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="form-group">
                     <label for="email">接收邮箱：</label>
                     <input type="email" id="email" name="email" required 
-                           value="<?php echo htmlspecialchars($userEmail); ?>" 
-                           placeholder="请输入您的邮箱地址">
+                           readonly value="<?php echo htmlspecialchars($userEmail); ?>" 
+                           style="opacity: 0.6;">
                 </div>
-                <button type="submit" class="submit-btn">提交</button>
+                    <button type="submit" class="submit-btn">提交</button>
             </form>
         </div>
 

@@ -26,12 +26,14 @@ if ($conn->query($sql) === TRUE) {
     $sql = "CREATE TABLE IF NOT EXISTS info (
         id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(30) NOT NULL UNIQUE,
+        realname VARCHAR(30) NOT NULL,
         password VARCHAR(255) NOT NULL,
         email VARCHAR(50) NOT NULL
     )";
     
     if ($conn->query($sql) === TRUE) {
         $username = $_POST['username'];
+        $realname = $_POST['realname'];
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
         $email = $_POST['email'];
         
@@ -46,9 +48,9 @@ if ($conn->query($sql) === TRUE) {
             $response['status'] = 'error';
             $response['message'] = 'username_exists';
         } else {
-            $sql = "INSERT INTO info (username, password, email) VALUES (?, ?, ?)";
+            $sql = "INSERT INTO info (username, realname, password, email) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss", $username, $password, $email);
+            $stmt->bind_param("ssss", $username, $realname, $password, $email);
             
             if ($stmt->execute()) {
                 $response['status'] = 'success';

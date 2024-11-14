@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $auth_code = $_POST['auth_code'];
 
     // 读取现有的 JSON 数据
-    $filePath = '../proxy_pool.json';
+    $filePath = '../json_data/proxy_pool.json';
     $data = file_exists($filePath) ? json_decode(file_get_contents($filePath), true) : [];
 
     // 追加新数据
@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta charset="utf-8">
     <style>
         @font-face {
@@ -238,30 +239,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flex-shrink: 0;
             font-size: 18px;
         }
+
         .back-button {
+            font-family: 'ChillReunion', sans-serif;
             position: absolute;
             top: 20px;
-            left: 20px;
+            left: -160px;
             background-color: #ff6b6b;
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 50px;
+            border-radius: 0 50px 50px 0;
             cursor: pointer;
-            font-size: 16px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 240px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+        }
+
+        .back-button .icon {
+            font-size: 48px;
+            position: absolute;
+            right: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button .text {
+            font-family: 'ChillReunion', sans-serif;
+            position: absolute;
+            right: 65px;
+            font-size: 28px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .back-button:hover {
+            left: 0;
             background-color: #ff4c4c;
-            transform: scale(1.1);
+        }
+
+        .back-button:hover .icon {
+            right: 180px;
+        }
+
+        .back-button:hover .text {
+            opacity: 1;
+            right: 30px;
         }
 
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="window.history.back();">返回</button>
+<button class="back-button" onclick="window.history.back();"">
+        <i class="icon fa-solid fa-cat"></i>
+        <span class="text">返回上页</span>
+    </button>
     <div class="page-container">
         <div class="disclaimer-container">
             <center>    
@@ -294,8 +331,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="email">贡献邮箱：</label>
                     <input type="email" id="email" name="email" required 
-                           value="<?php echo htmlspecialchars($userEmail); ?>" 
-                           placeholder="请输入您的邮箱地址">
+                           readonly value="<?php echo htmlspecialchars($userEmail); ?>" 
+                           style="opacity: 0.6;">
                 </div>
                 
                 <div class="form-group">

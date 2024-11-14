@@ -311,14 +311,19 @@ session_start();
         <h2>创建账号</h2>
         <form action="do_register.php" method="post" id="registerForm">
             <div class="form-group">
-                <label>用户名</label>
-                <input type="text" name="username" required placeholder="请输入用户名">
-                <div class="error-text" id="username-error">该用户名已存在</div>
+                <label>学号</label>
+                <input type="text" name="username" required placeholder="请输入学号">
+                <div class="error-text" id="username-error">该学号已存在</div>
                 <div class="hint">用户名长度3-20个字符</div>
             </div>
             <div class="form-group">
+                <label>真实姓名</label>
+                <input type="text" name="realname" required placeholder="请输姓名">
+                <div class="hint">姓名用于后期维护保存数据</div>
+            </div>
+            <div class="form-group">
                 <label>邮箱地址</label>
-                <input type="email" name="email" required placeholder="请输入邮箱地址">
+                <input type="email" name="email" required placeholder="谨慎输入，邮箱地址将用于后续所有功能">
                 <div class="hint">请输入有效的邮箱地址</div>
             </div>
             <div class="form-group">

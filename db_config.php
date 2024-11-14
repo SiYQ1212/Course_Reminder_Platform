@@ -28,6 +28,7 @@ class Database {
         $sql = "CREATE TABLE IF NOT EXISTS info (
             id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             username VARCHAR(30) NOT NULL UNIQUE,
+            realname VARCHAR(30) NOT NULL,
             password VARCHAR(255) NOT NULL,
             email VARCHAR(50) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

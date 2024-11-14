@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $time = htmlspecialchars($_POST['time']);
     $uploadDir = "../uploads/";
-    $mappingFile = "../mapping.json";
+    $mappingFile = "../json_data/mapping.json";
     
     // 确保上传目录存在并设置正确的权限
     if (!file_exists($uploadDir)) {
@@ -64,29 +64,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     chmod($mappingFile, 0644);
                     $message = "上传成功！";
                     echo "<script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            var msg = document.createElement('div');
-                            msg.style.position = 'fixed';
-                            msg.style.top = '50%';
-                            msg.style.left = '50%';
-                            msg.style.transform = 'translate(-50%, -50%)';
-                            msg.style.padding = '20px 40px';
-                            msg.style.background = 'rgba(0, 0, 0, 0.7)';
-                            msg.style.color = 'white';
-                            msg.style.borderRadius = '5px';
-                            msg.style.zIndex = '1000';
-                            msg.textContent = '上传成功！';
-                            document.body.appendChild(msg);
-                            
-                            setTimeout(function() {
-                                msg.style.transition = 'opacity 0.5s';
-                                msg.style.opacity = '0';
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // 创建遮罩层
+                                var overlay = document.createElement('div');
+                                overlay.style.position = 'fixed';
+                                overlay.style.top = '0';
+                                overlay.style.left = '0';
+                                overlay.style.width = '100%';
+                                overlay.style.height = '100%';
+                                overlay.style.background = 'rgba(0, 0, 0, 0.5)';
+                                overlay.style.zIndex = '999';
+                                document.body.appendChild(overlay);
+                                
+                                // 创建提示消息
+                                var msg = document.createElement('div');
+                                msg.style.position = 'fixed';
+                                msg.style.top = '50%';
+                                msg.style.left = '50%';
+                                msg.style.transform = 'translate(-50%, -50%)';
+                                msg.style.padding = '20px 40px';
+                                msg.style.background = 'rgba(0, 0, 0, 0.7)';
+                                msg.style.color = 'white';
+                                msg.style.borderRadius = '5px';
+                                msg.style.zIndex = '1000';
+                                msg.textContent = '已发送，请稍等！';
+                                document.body.appendChild(msg);
+                                
                                 setTimeout(function() {
-                                    document.body.removeChild(msg);
-                                }, 500);
-                            }, 1000);
-                        });
-                    </script>";
+                                    msg.style.transition = 'opacity 0.5s';
+                                    overlay.style.transition = 'opacity 0.5s';
+                                    msg.style.opacity = '0';
+                                    overlay.style.opacity = '0';
+                                    window.location.href = '../welcome.php';
+                                }, 1000);
+                            });
+                        </script>";
                 } else {
                     $error = "保存映射文件失败";
                     error_log("Failed to write mapping file: " . $mappingFile);
@@ -106,6 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <title>欢迎</title>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @font-face {
             font-family: 'ChillReunion';
@@ -255,37 +268,72 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .back-button {
+            font-family: 'ChillReunion', sans-serif;
             position: absolute;
             top: 20px;
-            left: 20px;
+            left: -160px;
             background-color: #ff6b6b;
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 50px;
+            border-radius: 0 50px 50px 0;
             cursor: pointer;
-            font-size: 16px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 240px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+        }
+
+        .back-button .icon {
+            font-size: 48px;
+            position: absolute;
+            right: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button .text {
+            font-family: 'ChillReunion', sans-serif;
+            position: absolute;
+            right: 65px;
+            font-size: 28px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .back-button:hover {
+            left: 0;
             background-color: #ff4c4c;
-            transform: scale(1.1);
+        }
+
+        .back-button:hover .icon {
+            right: 180px;
+        }
+
+        .back-button:hover .text {
+            opacity: 1;
+            right: 30px;
         }
 
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="window.history.back();">返回</button>
+    <button class="back-button" onclick="window.history.back();"">
+        <i class="icon fa-solid fa-cat"></i>
+        <span class="text">返回上页</span>
+    </button>
     <div class="page-container">
         <div class="container">
             <form action="#" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="email">接收邮箱：</label>
                     <input type="email" id="email" name="email" required 
-                           value="<?php echo htmlspecialchars($userEmail); ?>" 
-                           placeholder="请输入您的邮箱地址">
+                           readonly value="<?php echo htmlspecialchars($userEmail); ?>" 
+                           style="opacity: 0.6;">
                 </div>
                 
                 <div class="form-group">

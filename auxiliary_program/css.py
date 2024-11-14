@@ -1,4 +1,4 @@
-<style>
+CSS1 = """<style>
 
     .course-list {
         display: flex;
@@ -111,3 +111,4 @@
         }
     }
 </style>
+"""
