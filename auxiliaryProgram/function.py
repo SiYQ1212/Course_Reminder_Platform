@@ -45,7 +45,7 @@ def find_error(function):
 @find_error
 def solve_pdf(pdf_name):
     # pdf_name not include .pdf
-    pdf_path = os.path.join(Path, 'uploads', pdf_name + '.pdf')
+    pdf_path = os.path.join(Path, 'uploadFiles', pdf_name + '.pdf')
     pdf = fitz.open(pdf_path)
     contents = ""
     for page in pdf:
@@ -85,13 +85,13 @@ def solve_pdf(pdf_name):
             newDetailedInformation[detailedInformation[key][:-1]] = detailedInformation[key + 1]
         timetable[WEEK].append([CLASSHOUR, courseName, newDetailedInformation])
 
-    filePath = os.path.join(Path, 'uploads_json', pdf_name + ".json")
+    filePath = os.path.join(Path, 'parsingData', pdf_name + ".json")
     with open(filePath, "w", encoding="utf-8") as f:
         json.dump(timetable, f, ensure_ascii=False, indent=4)
     return True
 
 def get_mapping():
-    filePath = os.path.join(Path, "json_data", "mapping.json")
+    filePath = os.path.join(Path, "configurationInfo", "emailTimeTable.json")
     try:
         with open(filePath, "r", encoding='utf-8') as f:
             receiver = json.load(f)
@@ -100,7 +100,7 @@ def get_mapping():
     return receiver
 
 def get_proxy():
-    filePath = os.path.join(Path, "json_data", "proxy_pool.json")
+    filePath = os.path.join(Path, "configurationInfo", "proxyEmail.json")
     try:
         with open(filePath, "r", encoding='utf-8') as f:
             proxy = json.load(f)
@@ -144,7 +144,7 @@ def get_tomorrow_course(file_name):
     :return: 明日课表
     """
     # 获取总课表
-    filePath = os.path.join(Path, "uploads_json", file_name + ".json")
+    filePath = os.path.join(Path, "parsingData", file_name + ".json")
     with open(filePath, "r", encoding='utf-8') as f:
         data = json.load(f)
 
@@ -187,4 +187,4 @@ def create_html(course_information):
     return html
 
 if __name__ == '__main__':
-    solve_pdf("siyu")
+    ...

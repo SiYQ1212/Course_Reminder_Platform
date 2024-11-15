@@ -6,176 +6,11 @@ session_start();
 <head>
     <title>注册</title>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="css/common2.css">
     <style>
-        @font-face {
-            font-family: 'ChillReunion';
-            src: url('fonts/ChillReunion_Sans.otf') format('opentype');
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'ChillReunion', sans-serif;
-        }
-
+    
         body {
             background-image: url('images/background.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* 飞行物样式 */
-        .flying-elements {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .flying-element {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: moveAround 20s linear infinite;
-        }
-
-        .flying-element::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: inherit;
-            border-radius: inherit;
-            animation: pulse 2s ease-out infinite;
-        }
-
-        @keyframes moveAround {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            25% {
-                transform: translate(calc(100vw - 100%), 0) rotate(180deg);
-            }
-            50% {
-                transform: translate(calc(100vw - 100%), calc(100vh - 100%)) rotate(360deg);
-            }
-            75% {
-                transform: translate(0, calc(100vh - 100%)) rotate(540deg);
-            }
-            100% {
-                transform: translate(0, 0) rotate(720deg);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.5);
-                opacity: 0.7;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* 确保container在飞行物上层 */
-        .container {
-            width: 450px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            position: relative;
-            z-index: 1;
-        }
-
-        .container h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2em;
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            color: #666;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .form-group input:focus {
-            border-color: #4a90e2;
-            box-shadow: 0 0 10px rgba(74, 144, 226, 0.1);
-        }
-
-        .btn-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-        }
-
-        .btn-register {
-            background: #4CAF50;  /* 使用绿色作为注册按钮的颜色 */
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-register:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
-
-        .login-link {
-            color: #4a90e2;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .login-link:hover {
-            color: #357abd;
-            text-decoration: underline;
         }
 
         /* 添加表单验证提示样式 */
@@ -185,23 +20,6 @@ session_start();
             margin-top: 5px;
         }
 
-        /* 添加动画效果 */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .container {
-            animation: slideIn 0.5s ease-out;
-        }
-
-        /* 添加输入框图标的样式 */
         .form-group {
             position: relative;
         }
@@ -231,23 +49,11 @@ session_start();
         }
 
         .message {
-        padding: 10px 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        animation: fadeIn 0.5s ease-out;
-        text-align: center;
-        }
-
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease-out;
+            text-align: center;
         }
 
         .error-text {
@@ -265,6 +71,7 @@ session_start();
             cursor: pointer;
             color: #666;
         }
+
         .success-overlay {
             position: fixed;
             top: 0;
@@ -312,28 +119,24 @@ session_start();
         <form action="do_register.php" method="post" id="registerForm">
             <div class="form-group">
                 <label>学号</label>
-                <input type="text" name="username" required placeholder="请输入学号">
+                <input type="text" name="username" required placeholder="请输入学号(长度8-15个字符)">
                 <div class="error-text" id="username-error">该学号已存在</div>
-                <div class="hint">用户名长度3-20个字符</div>
             </div>
             <div class="form-group">
                 <label>真实姓名</label>
-                <input type="text" name="realname" required placeholder="请输姓名">
-                <div class="hint">姓名用于后期维护保存数据</div>
+                <input type="text" name="realname" required placeholder="请输入姓名">
             </div>
             <div class="form-group">
                 <label>邮箱地址</label>
-                <input type="email" name="email" required placeholder="谨慎输入，邮箱地址将用于后续所有功能">
-                <div class="hint">请输入有效的邮箱地址</div>
+                <input type="email" name="email" required placeholder="请输入有效的邮箱地址">
             </div>
             <div class="form-group">
                 <label>设置密码</label>
-                <input type="password" name="password" required placeholder="请输入密码">
+                <input type="password" name="password" required placeholder="请输入密码(建议使用字母、数字和符号的组合)">
                 <span class="password-toggle" onclick="togglePassword(this)">👁️</span>
                 <div class="password-strength">
                     <span></span>
                 </div>
-                <div class="hint">建议使用字母、数字和符号的组合</div>
             </div>
             <div class="form-group">
                 <label>确认密码</label>
@@ -342,8 +145,8 @@ session_start();
                 <div class="error-text" id="password-error">两次输入的密码不一致</div>
             </div>
             <div class="btn-group">
-                <button type="submit" class="btn-register">注 册</button>
-                <a href="login.php" class="login-link">已有账号？立即登录</a>
+                <button type="submit" class="btn_action">注 册</button>
+                <a href="login.php" class="action_link">已有账号？立即登录</a>
             </div>
         </form>
     </div>
@@ -401,7 +204,7 @@ session_start();
 
             // 发送表单数据
             const formData = new FormData(this);
-            fetch('do_register.php', {
+            fetch('doRegister.php', {
                 method: 'POST',
                 body: formData
             })

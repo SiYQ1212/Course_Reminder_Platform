@@ -69,13 +69,4 @@ def run_schedule():
 
 
 if __name__ == '__main__':
-    while True:
-        try:
-            thread1 = threading.Thread(target=run_schedule, daemon=True)
-            thread2 = threading.Thread(target=watch_file, args=(Path + "json_data/mapping.json",), daemon=True)
-            thread1.start()
-            thread2.start()
-            thread1.join()
-            thread2.join()
-        except Exception as e:
-            log_error(f"{datetime.datetime.now()}: <persistent_send.py> [main] :{e}")
+    ...

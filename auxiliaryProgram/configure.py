@@ -2,11 +2,16 @@
 #!/usr/bin/python3
 
 import datetime
+import os
 
 # 开学日期 firstDay
 DATA = datetime.date(2024, 8, 26)
 
-Path = "/var/www/html/"
+if os.name == "posix":
+    Path = "/var/www/html/"   
+elif os.name == "nt":
+    Path = "C:/Users/dpdgp/Desktop/WWW/xico"
+
 # 发送时间
 Send_Time = "17:30"
 

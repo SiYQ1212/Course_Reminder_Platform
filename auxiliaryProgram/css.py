@@ -1,5 +1,5 @@
-CSS1 = """<style>
-
+CSS1 = """
+<style>
     .course-list {
         display: flex;
         flex-direction: column;

@@ -49,19 +49,15 @@ def send_test(receiver):
     mapping = get_mapping()
     if mapping.get(receiver, False):
         course_information = get_tomorrow_course(receiver)
-        print(course_information)
         if course_information:
             html = create_html(course_information)
             send_html_email(html, receiver, css=CSS1, subject="明日课程邮件")
         else: # 明天没有课程安排
-            html = open(os.path.join(Path, "test_html", "no_course.html"), "r", encoding='utf-8').read()
+            html = open(os.path.join(Path, "testSendPage", "noCourse.html"), "r", encoding='utf-8').read()
             send_html_email(html, receiver, subject="无课测试邮件")
     else: # 不在课程表接收列表中
-        html = open(os.path.join(Path, "test_html", "no_mapping.html"), "r", encoding='utf-8').read()
+        html = open(os.path.join(Path, "testSendPage", "noAuthority.html"), "r", encoding='utf-8').read()
         send_html_email(html, receiver, subject="无权限测试邮件")
 
 if __name__ == '__main__':
-    try:
-        send_test("2668733873@qq.com")
-    except:
-        print("Error")
+    ...
